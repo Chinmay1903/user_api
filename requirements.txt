@@ -10,3 +10,4 @@ fastapi
 bcrypt
 asyncio
 uvicorn
+asyncpg
