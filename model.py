@@ -25,6 +25,10 @@ class UserUpdate(BaseModel):
 class UserDelete(BaseModel):
     id: str = Field(..., example="Enter your id")
 
+class UserLogin(BaseModel):
+    username  : str
+    password  : str
+
 
 ## Model for Employees Table
 class EmployeesList(BaseModel):

@@ -93,19 +93,13 @@ async def delete_user(user: mdUser.UserDelete):
 
 ###---------------------------------LOGIN-------------------------------------####
 @app.post("/login", tags=["Users"])
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    # Step 1: Fetch user from DB by username
-    query = users.select().where(users.c.username == form_data.username)
-    user = await database.fetch_one(query)
+async def login(user: mdUser.UserLogin):
+    query = users.select().where(users.c.username == user.username)
+    db_user = await database.fetch_one(query)
 
-    if not user:
+    if not db_user or not pwd_context.verify(user.password, db_user["password"]):
         raise HTTPException(status_code=401, detail="Invalid username or password")
-
-    # Step 2: Verify password
-    if not pwd_context.verify(form_data.password, user["password"]):
-        raise HTTPException(status_code=401, detail="Invalid username or password")
-
-    # ✅ Login success - return basic user info (or JWT token later)
+    
     return {"status": True,"message": "Login successful"}
 
 ###---------------------------------------------------------------------------####
