@@ -6,11 +6,28 @@ from fastapi.security import OAuth2PasswordRequestForm
 from typing import List
 from passlib.context import CryptContext
 from contextlib import asynccontextmanager ##new
+from fastapi.middleware.cors import CORSMiddleware
  
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 app = FastAPI()
+
+##--------------------------------##
+ALLOWED_ORIGINS = [
+    "http://127.0.0.1:5500",
+    "http://localhost:5500",
+    # add your deployed frontend origin(s) here when ready
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,                   # keep False if you don't use cookies
+    allow_methods=["POST", "OPTIONS"],         # include OPTIONS for preflight
+    allow_headers=["Content-Type","Authorization"],            # add others if you send them
+)
+##---------------------------------##
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
