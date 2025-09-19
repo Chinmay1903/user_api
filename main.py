@@ -1,6 +1,6 @@
 import datetime, uuid
 import model as mdUser
-from pg_db import database, users
+from pg_db import database, users,employees
 from fastapi import FastAPI
 from typing import List
 from passlib.context import CryptContext
@@ -28,13 +28,7 @@ async def startup():
 async def shutdown():
     await database.disconnect()
 
-#@app.on_event("startup")
-#async def startup():
-#    await database.connect()
-
-#@app.on_event("shutdown")
-#async def shutdown():
-#    await database.disconnect()
+## End Point for User table.
 
 @app.get("/users", response_model=List[mdUser.UserList], tags=["Users"])
 async def find_all_users():
@@ -95,6 +89,66 @@ async def delete_user(user: mdUser.UserDelete):
         "message": "This user has been deleted successfully." 
     }
 
-#@app.get("/courses", tags=["Courses"])
-#def find_all_courses():
-#    return "List all courses."
+## End Point for Employees Table
+@app.get("/employees", response_model=List[mdUser.EmployeesList], tags=["Employees"])
+async def find_all_employees():
+    query = employees.select()
+    return await database.fetch_all(query)
+
+@app.post("/employees", response_model=mdUser.EmployeesList, tags=["Employees"])
+async def register_employee(employee: mdUser.EmployeesEntry):
+    gDate =str(datetime.datetime.now())
+    query = employees.insert().values(
+        employees_id   = employee.employees_id,
+        first_name =     employee.first_name,
+        last_name  =     employee.last_name,
+        email      =     employee.email,
+        phone      =     employee.phone,
+        gender     =     employee.gender,
+        designation=     employee.designation,
+        role       =     employee.role,
+        create_at  =     gDate,
+        status     =     "1"
+    ) 
+
+    await database.execute(query)
+    return {
+        **employee.dict(),
+        "create_at":gDate,
+        "status": "1"
+    }
+
+@app.get("/employees/{employees_id}", response_model=mdUser.EmployeesList, tags=["Employees"])
+async def find_employees_by_id(employees_id: str):
+    query = employees.select().where(employees.c.employees_id == employees_id)
+    return await database.fetch_one(query)
+
+@app.put("/employees", response_model=mdUser.EmployeesList, tags=["Employees"])
+async def update_employees(employee: mdUser.EmployeesUpdate):
+    gDate = str(datetime.datetime.now())
+    query = employees.update().\
+        where(employees.c.employees_id == employee.employees_id).\
+        values(
+            first_name =     employee.first_name,
+            last_name  =     employee.last_name,
+            email      =     employee.email,
+            phone      =     employee.phone,
+            gender     =     employee.gender,
+            designation=     employee.designation,
+            role       =     employee.role,
+            status     =     employee.status,
+            create_at  =     gDate,
+        )
+    await database.execute(query)
+
+    return await find_employees_by_id(employee.employees_id)
+
+@app.delete("/employees/{employees_Id}", tags=["Employees"])
+async def delete_employees(employee: mdUser.EmployeesDelete):
+    query = employees.delete().where(employees.c.employees_id == employee.employees_id)
+    await database.execute(query)
+
+    return {
+        "status" : True,
+        "message": "This employees has been deleted successfully." 
+    }
