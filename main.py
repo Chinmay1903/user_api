@@ -1,10 +1,12 @@
 import datetime, uuid
 import model as mdUser
 from pg_db import database, users,employees
-from fastapi import FastAPI
+from fastapi import FastAPI,HTTPException,Depends 
+from fastapi.security import OAuth2PasswordRequestForm
 from typing import List
 from passlib.context import CryptContext
 from contextlib import asynccontextmanager ##new
+ 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -88,6 +90,26 @@ async def delete_user(user: mdUser.UserDelete):
         "status" : True,
         "message": "This user has been deleted successfully." 
     }
+
+###---------------------------------LOGIN-------------------------------------####
+@app.post("/login", tags=["Users"])
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    # Step 1: Fetch user from DB by username
+    query = users.select().where(users.c.username == form_data.username)
+    user = await database.fetch_one(query)
+
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+
+    # Step 2: Verify password
+    if not pwd_context.verify(form_data.password, user["password"]):
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+
+    # ✅ Login success - return basic user info (or JWT token later)
+    return {"status": True,"message": "Login successful"}
+
+###---------------------------------------------------------------------------####
+
 
 ## End Point for Employees Table
 @app.get("/employees", response_model=List[mdUser.EmployeesList], tags=["Employees"])
