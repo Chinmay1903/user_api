@@ -1,8 +1,7 @@
 import databases, sqlalchemy
 
 ## Postgres Database
-DATABASE_URL = "postgresql://gms_database_user:5PRtfWe73tmoZFRdXqSaziTAxoUjU7Gx@dpg-d365e7ndiees738r8v8g-a.virginia-postgres.render.com/gms_database"
-
+DATABASE_URL = "postgresql://postgres:Pathak%40123@localhost:5432/GMS_database"
 
 database = databases.Database(DATABASE_URL)
 metadata = sqlalchemy.MetaData()

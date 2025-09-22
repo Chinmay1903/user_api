@@ -1,8 +1,8 @@
-from schema.users import UserList,UserUpdate
+from schema.users import UserList,UserUpdate,UserLogin
 from schema.employees import EmployeesList,EmployeesUpdate
 from curd.users import UserCurdOperation
 from curd.employees import EmployeesCurdOperation
-from fastapi import FastAPI,Request
+from fastapi import FastAPI,Request,HTTPException,status
 from fastapi.responses import JSONResponse
 from typing import List
 from contextlib import asynccontextmanager
@@ -23,7 +23,8 @@ ALLOWED_ORIGINS = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
+    allow_origins=["*"],
+    ##allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,                   # keep False if you don't use cookies
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"], # allow all HTTP methods
     allow_headers=["*"],                        # add others if you send them
@@ -76,10 +77,31 @@ async def delete_user(userId: str):
     return await UserCurdOperation.delete_user(userId)
 
 # Login
+# @app.post("/login", tags=["Users"])
+# async def login(user: UserLogin):
+#     return await UserCurdOperation.login(user)
 @app.post("/login", tags=["Users"])
-async def login(user: UserList):
-    return await UserCurdOperation.login(user)
+@app.post("/login", tags=["Users"])
+async def login(user: UserLogin):
+    try:
+        result = await UserCurdOperation.login(user)
+        print("Login result:", result)  # 👈 Debug output
 
+        if not result:
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid username or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        return {"message": "Login successful"}
+
+    except HTTPException as http_exc:
+        raise http_exc
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+    
 ## ---------------- EMPLOYEE ENDPOINTS ----------------
 
 # Get all employees
