@@ -1,8 +1,7 @@
 import databases, sqlalchemy
 
 ## Postgres Database
-DATABASE_URL = "postgresql://gms_database_user:5PRtfWe73tmoZFRdXqSaziTAxoUjU7Gx@dpg-d365e7ndiees738r8v8g-a.virginia-postgres.render.com/gms_database"
-
+DATABASE_URL = "postgresql://postgres:Pathak%40123@localhost:5432/GMS_database"
 
 
 database = databases.Database(DATABASE_URL)
@@ -31,9 +30,14 @@ employees = sqlalchemy.Table(
     sqlalchemy.Column("last_name"           , sqlalchemy.String),
     sqlalchemy.Column("email"               , sqlalchemy.String),
     sqlalchemy.Column("phone"               , sqlalchemy.String),
-    sqlalchemy.Column("gender"              , sqlalchemy.CHAR  ),
+    sqlalchemy.Column("gender"              , sqlalchemy.String ),
     sqlalchemy.Column("designation"         , sqlalchemy.String  ),
     sqlalchemy.Column("role"                , sqlalchemy.String),
+    sqlalchemy.Column("skill"               , sqlalchemy.String),
+    sqlalchemy.Column("experience"          , sqlalchemy.String),
+    sqlalchemy.Column("qualification"       , sqlalchemy.String),
+    sqlalchemy.Column("state"               , sqlalchemy.String),
+    sqlalchemy.Column("city"                , sqlalchemy.String),
     sqlalchemy.Column("create_at"           , sqlalchemy.String),
     sqlalchemy.Column("status"              , sqlalchemy.CHAR  ),
 )
