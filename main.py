@@ -120,7 +120,6 @@ async def find_employee_by_id(employeeId: str):
     return await EmployeesCurdOperation.find_employees_by_id(employeeId)
 
 # Update employee
-# Update employee
 @app.put("/employees/{employeeId}", response_model=EmployeesList, tags=["Employees"])
 async def update_employee(employeeId: str, employee: EmployeesUpdate):
     employee.employees_id = employeeId  # assign path param into request body
@@ -130,3 +129,13 @@ async def update_employee(employeeId: str, employee: EmployeesUpdate):
 @app.delete("/employees/{employeeId}", tags=["Employees"])
 async def delete_employee(employeeId: str):
     return await EmployeesCurdOperation.delete_employee(employeeId)
+
+# Get all employees names and ids
+@app.get("/employees_names", tags=["Employees"])
+async def find_all_employees_name():
+    return await EmployeesCurdOperation.find_all_employees_name()
+
+# Get all managers names and ids
+@app.get("/manager_names", tags=["Employees"])
+async def find_all_managers_name():
+    return await EmployeesCurdOperation.all_managers_name()
