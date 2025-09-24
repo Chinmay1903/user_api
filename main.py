@@ -1,5 +1,7 @@
+from curd.roles import RolesCurdOperation
 from schema.users import UserList,UserUpdate,UserLogin
 from schema.employees import EmployeesList,EmployeesUpdate
+from schema.roles import RolesList, RolesEntry, RolesUpdate, RolesDelete
 from curd.users import UserCurdOperation
 from curd.employees import EmployeesCurdOperation
 from fastapi import FastAPI,Request,HTTPException,status
@@ -139,3 +141,27 @@ async def find_all_employees_name():
 @app.get("/manager_names", tags=["Employees"])
 async def find_all_managers_name():
     return await EmployeesCurdOperation.all_managers_name()
+
+
+## ------------------------------------Roles Endpoints-----------------------------
+
+# Get all roles
+@app.get("/roles", response_model=List[RolesList], tags=["Roles"])
+async def find_all_roles():
+    return await RolesCurdOperation.find_all_roles()
+
+# Register role
+@app.post("/roles", response_model=RolesList, tags=["Roles"])
+async def register_role(role: RolesEntry):
+    return await RolesCurdOperation.register_role(role)
+
+# Update role
+@app.put("/roles/{roleId}", response_model=RolesList, tags=["Roles"])
+async def update_role(roleId: str, role: RolesUpdate):
+    role.role_id = roleId  # assign path param into request body
+    return await RolesCurdOperation.update_role(role)
+
+# Delete role
+@app.delete("/roles/{roleId}", tags=["Roles"])
+async def delete_role(roleId: str):
+    return await RolesCurdOperation.delete_role(RolesDelete(role_id=roleId))

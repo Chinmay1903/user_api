@@ -10,7 +10,7 @@ metadata = sqlalchemy.MetaData()
 users = sqlalchemy.Table(
     "users",
     metadata,
-    sqlalchemy.Column("id"        , sqlalchemy.String, primary_key=True),
+    sqlalchemy.Column("id"        , sqlalchemy.String, primary_key=True, auto_increment=True),
     sqlalchemy.Column("username"  , sqlalchemy.String),
     sqlalchemy.Column("password"  , sqlalchemy.String),
     sqlalchemy.Column("first_name", sqlalchemy.String),
@@ -24,14 +24,15 @@ users = sqlalchemy.Table(
 employees = sqlalchemy.Table(
     "employees",
     metadata,
-    sqlalchemy.Column("employees_id"        , sqlalchemy.String,nullable=False),
+
+    sqlalchemy.Column("employees_id"        , sqlalchemy.String, nullable=False, unique=True),
     sqlalchemy.Column("first_name"          , sqlalchemy.String),
     sqlalchemy.Column("last_name"           , sqlalchemy.String),
     sqlalchemy.Column("email"               , sqlalchemy.String),
     sqlalchemy.Column("phone"               , sqlalchemy.String),
-    sqlalchemy.Column("gender"              , sqlalchemy.String ),
-    sqlalchemy.Column("designation"         , sqlalchemy.String  ),
-    sqlalchemy.Column("role"                , sqlalchemy.String),
+    sqlalchemy.Column("gender"              , sqlalchemy.String),
+    sqlalchemy.Column("designation"         , sqlalchemy.String),
+    sqlalchemy.Column("role"                , sqlalchemy.String, sqlalchemy.ForeignKey("roles.role_id")),
     sqlalchemy.Column("skill"               , sqlalchemy.String),
     sqlalchemy.Column("experience"          , sqlalchemy.String),
     sqlalchemy.Column("qualification"       , sqlalchemy.String),
@@ -39,6 +40,16 @@ employees = sqlalchemy.Table(
     sqlalchemy.Column("city"                , sqlalchemy.String),
     sqlalchemy.Column("create_at"           , sqlalchemy.String),
     sqlalchemy.Column("status"              , sqlalchemy.CHAR  ),
+)
+
+
+## Create a Roles Table
+roles = sqlalchemy.Table(
+    "roles",
+    metadata,
+    sqlalchemy.Column("role_id",    sqlalchemy.String, primary_key=True, auto_increment=True),
+    sqlalchemy.Column("role_name",  sqlalchemy.String, unique=True, nullable=False),
+    sqlalchemy.Column("create_at",  sqlalchemy.String),
 )
 
 
